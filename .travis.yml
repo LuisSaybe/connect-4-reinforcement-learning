@@ -1,0 +1,7 @@
+language: python3
+services:
+  - docker
+deploy:
+  provider: script
+  script: bash docker/push.bash
+  on:
