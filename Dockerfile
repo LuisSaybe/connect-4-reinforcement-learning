@@ -1,5 +1,7 @@
 FROM centos:7
 
+ENV SOURCE_DIRECTORY /tmp/tf-gridworld
+
 ENV PYTHON_VERSION 3.6.4
 
 RUN yum -y groupinstall -y "Development Tools" && \
@@ -13,3 +15,6 @@ RUN yum -y groupinstall -y "Development Tools" && \
     make install && \
     pip3 install --upgrade pip && \
     pip3 install tensorflow==2.0.0-rc0
+
+COPY . $SOURCE_DIRECTORY
+CMD python3 $SOURCE_DIRECTORY/src/index.py
