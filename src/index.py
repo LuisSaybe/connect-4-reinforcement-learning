@@ -1,24 +1,30 @@
-#!/usr/bin/env python3
-
 import tensorflow as tf
+import tensorflow_probability as tfp
+import math
 
-states = list(range(10))
+def game(action):
+    if action < -4 or action > 2:
+        return -1
+    return math.sin(action)
 
-policy_model = tf.keras.models.Sequential([
-    tf.keras.layers.Dense(4, input_shape=(1,), activation='softmax'),
+def make_distribution_fn(t):
+    return tfp.distributions.Normal(loc=2, scale=3, validate_args=True)
+
+def convert_to_tensor_fn(s):
+    return s.sample(5)
+
+action_model = tf.keras.Sequential([
+  tf.keras.layers.Dense(2, input_dim=2),
+  tfp.layers.DistributionLambda(
+    make_distribution_fn=make_distribution_fn,
+    convert_to_tensor_fn=convert_to_tensor_fn
+  )
 ])
-policy_model.compile(
-    optimizer='adam',
-    loss='sparse_categorical_crossentropy',
-    metrics=['accuracy']
-)
 
-with tf.Session() as sess:
-    out = policy_model.predict(
-        tf.constant([
-            [1.0]
-        ], dtype='float32'),
-        steps=1
-    )
+tensor = tf.constant([
+  [1.0, 2.0]
+], dtype='float32')
 
-    print(out)
+out = action_model.predict(tensor)
+
+print(out)

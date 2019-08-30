@@ -13,3 +13,9 @@ docker build --rm -t tf-gridworld .
 ```sh
 docker run -it --rm tf-gridworld
 ```
+
+#### make code changes and run
+
+```sh
+docker build -t tf-gridworld . && docker run -it --rm tf-gridworld
+```
