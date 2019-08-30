@@ -8,7 +8,7 @@ def game(action):
     return math.sin(action)
 
 def make_distribution_fn(t):
-    return tfp.distributions.Normal(loc=2, scale=3, validate_args=True)
+    return tfp.distributions.Normal(loc=t, scale=t, validate_args=True)
 
 def convert_to_tensor_fn(s):
     return s.sample(5)
