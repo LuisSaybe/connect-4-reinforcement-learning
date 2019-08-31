@@ -7,24 +7,35 @@ def game(action):
         return -1
     return math.sin(action)
 
-def make_distribution_fn(t):
-    return tfp.distributions.Normal(loc=t, scale=t, validate_args=True)
-
-def convert_to_tensor_fn(s):
-    return s.sample(5)
-
 action_model = tf.keras.Sequential([
-  tf.keras.layers.Dense(2, input_dim=2),
+  tf.keras.layers.Dense(1),
+  tf.keras.layers.Lambda(lambda t : tf.keras.backend.clip(t, 1, 10)),
   tfp.layers.DistributionLambda(
-    make_distribution_fn=make_distribution_fn,
-    convert_to_tensor_fn=convert_to_tensor_fn
+    make_distribution_fn=lambda t : tfp.distributions.Normal(loc=t, scale=t)
   )
 ])
 
-tensor = tf.constant([
-  [1.0, 2.0]
-], dtype='float32')
+action_model.compile(
+  optimizer='adam',
+  loss='mean_squared_error',
+  metrics=['accuracy']
+)
 
-out = action_model.predict(tensor)
+value_model = tf.keras.Sequential([
+  tf.keras.layers.Dense(1),
+])
 
-print(out)
+value_model.compile(
+  optimizer='adam',
+  loss='mean_squared_error',
+  metrics=['accuracy']
+)
+
+for _ in range(10):
+    state = tf.constant([ [0.0] ], dtype='float32')
+    action = action_model.predict(state)
+    reward = game(action)
+    next_state = tf.constant([ [0.0] ], dtype='float32')
+    delta = reward + value_model.predict(next_state) + value_model.predict(state)
+
+    print('reward', reward)
