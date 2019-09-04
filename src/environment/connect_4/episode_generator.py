@@ -29,6 +29,7 @@ class EpisodeGenerator:
                 break
 
             action = policy.getAction(state, available_actions)
+
             (x, y) = environment.drop(action, player)
 
             if environment.connects(x, y, player):

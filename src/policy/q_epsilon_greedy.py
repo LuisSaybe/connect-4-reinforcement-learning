@@ -14,7 +14,8 @@ class QEpsilonGreedyPolicy:
             return random.choice(available_actions)
 
         state_tensor = tf.constant([ state ], dtype='float32', shape=(1, 6 * 7))
-        values = self.model.predict(state_tensor).tolist()[0]
+        prediction = self.model.predict(state_tensor)
+        values = prediction.tolist()[0]
 
         indexes = range(len(values))
         available_indexes = list(filter(lambda i : i in available_actions, indexes))

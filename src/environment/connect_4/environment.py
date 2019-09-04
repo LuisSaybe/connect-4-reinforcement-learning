@@ -68,7 +68,9 @@ class Environment:
             self.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
                 x - Environment.CONNNECTION_MAGNITUDE,
-                y - Environment.CONNNECTION_MAGNITUDE, 1, 1
+                y + Environment.CONNNECTION_MAGNITUDE,
+                1,
+                -1
             ) for i in magnitude_list
         ]
         diagnol_bottom_left_to_top_right = [
@@ -87,8 +89,9 @@ class Environment:
             diagnol_top_left_to_bottom_right,
             diagnol_bottom_left_to_top_right
         )
+        all_in_bound_vectors = filter(lambda vector: self.areInBounds(vector), all_vectors)
 
-        for vector in filter(lambda vector: self.areInBounds(vector), all_vectors):
+        for vector in all_in_bound_vectors:
             if self.areAllEqual(vector, player):
                 return True
         return False
