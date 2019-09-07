@@ -14,7 +14,7 @@ RUN yum -y groupinstall -y "Development Tools" && \
     make && \
     make install && \
     pip3 install --upgrade pip && \
-    pip3 install tensorflow==2.0.0-rc0 tensorflow_probability==0.8.0-rc0 numpy ray ray[debug]
+    pip3 install tensorflow==2.0.0-rc0 tensorflow_probability==0.8.0-rc0 numpy ray psutil falcon jsonschema
 
 COPY . $SOURCE_DIRECTORY
 CMD python3 $SOURCE_DIRECTORY/src/index.py
