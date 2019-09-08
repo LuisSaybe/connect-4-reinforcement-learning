@@ -1,45 +1,23 @@
-import time
+from multiprocessing import Process
 import tensorflow as tf
 import falcon
-from falcon.media.validators import jsonschema
 
-from environment.connect_4.environment import Environment
-from environment.connect_4.episode_generator import EpisodeGenerator
-from policy.q_epsilon_greedy import QEpsilonGreedyPolicy
+from src.environment.connect_4.environment import Environment
+from src.resource.prediction import PredictionResource
+from src.resource.train import TrainResource
+from src.resource.cors import CORS
 
 agent_q_model = tf.keras.Sequential([
-  tf.keras.layers.Dense(7, input_shape=[6 * 7]),
+  tf.keras.layers.Flatten(),
+  tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3], activation='linear'),
 ])
 
 agent_q_model.compile(
-  optimizer='adam',
+  optimizer=tf.keras.optimizers.SGD(lr=0.01),
   loss='mean_squared_error',
   metrics=['accuracy']
 )
 
-agent_policy = QEpsilonGreedyPolicy(agent_q_model, 0.1)
-generator = EpisodeGenerator(agent_policy, agent_policy, True)
-
-start = time.time()
-
-episodes = generator.getMany(10)
-
-end = time.time()
-
-print('duration', end - start)
-
-class Resource(object):
-    schema = {
-        "type" : "array",
-        "maxItems": 6 * 7,
-        "minItems": 6 * 7,
-        "items": [
-            { "enum": [ Environment.EMPTY, Environment.AGENT, Environment.ADVERSARY ] },
-            { "type": "string" }
-        ]
-    }
-
-    @jsonschema.validate(Resource.schema)
-    def on_post(self, req, resp):
-        message = req.media.get('message')
-        resp.media = {'message': message}
+api = falcon.API(middleware=[CORS()])
+api.add_route('/predict', PredictionResource(agent_q_model))
+api.add_route('/train', TrainResource(agent_q_model))

@@ -1,4 +1,4 @@
-from .environment import Environment
+from src.environment.connect_4.environment import Environment
 
 class EpisodeGenerator:
     def __init__(self, agent_policy, adversary_policy, agent_first):

@@ -13,7 +13,7 @@ class QEpsilonGreedyPolicy:
         if random_action:
             return random.choice(available_actions)
 
-        state_tensor = tf.constant([ state ], dtype='float32', shape=(1, 6 * 7))
+        state_tensor = tf.one_hot([state], dtype='float32', depth=3)
         prediction = self.model.predict(state_tensor)
         values = prediction.tolist()[0]
 

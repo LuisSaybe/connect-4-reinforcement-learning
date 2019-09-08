@@ -5,9 +5,11 @@ class Environment:
     AGENT = 1
     ADVERSARY = 2
     CONNNECTION_MAGNITUDE = 4
+    COLUMNS = 7
+    ROWS = 6
 
     def __init__(self):
-        self.board = [ [ Environment.EMPTY ] * 7 for row in range(6)]
+        self.board = [ [ Environment.EMPTY ] * Environment.COLUMNS for row in range(6)]
 
     def getAvailableActions(self):
         result = []
@@ -43,6 +45,16 @@ class Environment:
         for row in self.board:
             result.extend(row)
         return result
+
+    def reversePoint(point):
+        if point == Environment.EMPTY:
+            return Environment.EMPTY
+        elif point == Environment.ADVERSARY:
+            return Environment.AGENT
+        return Environment.ADVERSARY
+
+    def reverseState(state):
+        return list(map(Environment.reversePoint, state))
 
     def connects(self, x, y, player):
         magnitude_list = list(range(Environment.CONNNECTION_MAGNITUDE))
