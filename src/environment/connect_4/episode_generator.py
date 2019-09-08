@@ -1,18 +1,17 @@
-from src.environment.connect_4.environment import Environment
+from environment.connect_4.environment import Environment
 
 class EpisodeGenerator:
-    def __init__(self, agent_policy, adversary_policy, agent_first):
+    def __init__(self, agent_policy, adversary_policy):
         self.agent_policy = agent_policy
         self.adversary_policy = adversary_policy
-        self.agent_first = agent_first
 
     def getMany(self, n):
-        return [ self.get() for i in range(n) ]
+        return [ self.get(i % 2 == 0) for i in range(n) ]
 
-    def get(self):
+    def get(self, agent_first):
         environment = Environment()
 
-        is_agents_turn = self.agent_first
+        is_agents_turn = agent_first
         policy_index = 0
         episode = []
 

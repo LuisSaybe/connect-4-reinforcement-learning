@@ -1,12 +1,13 @@
+import os.path
 import tensorflow as tf
 import falcon
 from falcon.media.validators import jsonschema
 
-from src.environment.connect_4.environment import Environment
+from environment.connect_4.environment import Environment
 
 class PredictionResource(object):
-    def __init__(self, model):
-        self.model = model
+    def __init__(self, model_path):
+        self.model_path = model_path
 
     @jsonschema.validate({
         "type" : "array",
@@ -17,7 +18,11 @@ class PredictionResource(object):
         ]
     })
     def on_post(self, req, resp):
-        state = req.media
-        state_tensor = tf.one_hot([state], dtype='float32', depth=3)
-        state_action_values = self.model.predict(state_tensor).tolist()[0]
-        resp.media = state_action_values
+        if os.path.isfile(self.model_path):
+            state = req.media
+            state_tensor = tf.one_hot([state], dtype='float32', depth=3)
+            model = tf.keras.models.load_model(self.model_path)
+            state_action_values = model.predict(state_tensor).tolist()[0]
+            resp.media = state_action_values
+        else:
+            resp.media = [ 0 ] * Environment.COLUMNS

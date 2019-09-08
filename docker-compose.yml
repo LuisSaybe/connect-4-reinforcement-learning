@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  server:
+    image: tf-connect4
+    ports:
+      - "8000:8000"
+    volumes:
+       - ./model:/tmp/model
+  trainer:
+    image: tf-connect4
+    command: python3 src/train.py 1000 10
+    volumes:
+       - ./model:/tmp/model
+
+volumes:
+  model:

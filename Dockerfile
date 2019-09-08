@@ -1,6 +1,6 @@
 FROM centos:7
 
-ENV SOURCE_DIRECTORY /tmp/tf-gridworld
+ENV SOURCE_DIRECTORY /tmp/tf-connect4
 
 ENV PYTHON_VERSION 3.7.4
 
@@ -14,8 +14,8 @@ RUN yum -y groupinstall -y "Development Tools" && \
     make && \
     make install && \
     pip3 install --upgrade pip && \
-    pip3 install tensorflow==2.0.0-rc0 tensorflow_probability==0.8.0-rc0 numpy falcon jsonschema gunicorn
+    pip3 install tensorflow==2.0.0-rc0 tensorflow_probability==0.8.0-rc0 numpy falcon jsonschema
 
 COPY . $SOURCE_DIRECTORY
 WORKDIR $SOURCE_DIRECTORY
-CMD gunicorn -b 0.0.0.0:8000 src.index:api
+CMD python3 src/server.py
