@@ -56,11 +56,6 @@ def collect(episode_count):
 
     return x, y
 
-'''
-episodes duration
-100      117s
-'''
-
 iterations = int(sys.argv[1])
 epsides_count = int(sys.argv[2])
 

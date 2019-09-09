@@ -2,14 +2,14 @@ version: '3.7'
 
 services:
   server:
-    image: tf-connect4
+    image: luissaybe/tf-connect4
     ports:
       - "8000:8000"
     volumes:
        - ./model:/tmp/model
   trainer:
-    image: tf-connect4
-    command: python3 src/train.py 1000 10
+    image: luissaybe/tf-connect4
+    command: python3 src/train.py 5000000000 30
     volumes:
        - ./model:/tmp/model
 
