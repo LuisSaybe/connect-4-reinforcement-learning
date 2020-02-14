@@ -14,25 +14,18 @@ from resource.cors import CORS
 
 MODEL_PATH = '/tmp/model/model.h5'
 
-def getModel():
-    if os.path.isfile(MODEL_PATH):
-        return tf.keras.models.load_model(MODEL_PATH)
+model = tf.keras.Sequential([
+  tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
+  tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3]),
+])
 
-    model = tf.keras.Sequential([
-      tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
-      tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3]),
-    ])
-
-    model.compile(
-      optimizer=tf.keras.optimizers.SGD(lr=0.01),
-      loss='mean_squared_error',
-      metrics=['accuracy']
-    )
-
-    return model
+model.compile(
+  optimizer=tf.keras.optimizers.SGD(lr=0.01),
+  loss='mean_squared_error',
+  metrics=['accuracy']
+)
 
 def collect(episode_count):
-    model = getModel()
     agent_policy = QEpsilonGreedyPolicy(model, 0.1)
     generator = EpisodeGenerator(agent_policy, agent_policy)
     episodes = generator.getMany(episode_count)
@@ -61,15 +54,12 @@ epsides_count = int(sys.argv[2])
 
 for i in range(iterations):
     print('iteration', i + 1, 'of', iterations)
-    print('multiprocessing.cpu_count()', multiprocessing.cpu_count())
 
     start = time.time()
 
     print('collecting', epsides_count, 'episodes')
 
     x, y = collect(epsides_count)
-
-    model = getModel()
 
     print('fitting', len(x), 'points')
 

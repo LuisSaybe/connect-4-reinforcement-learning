@@ -14,7 +14,7 @@ RUN yum -y groupinstall -y "Development Tools" && \
     make && \
     make install && \
     pip3 install --upgrade pip && \
-    pip3 install tensorflow==2.0.0-rc0 tensorflow_probability==0.8.0-rc0 numpy falcon jsonschema
+    pip3 install tensorflow==2.1.0 tensorflow_probability==0.8.0 numpy falcon jsonschema
 
 COPY . $SOURCE_DIRECTORY
 WORKDIR $SOURCE_DIRECTORY

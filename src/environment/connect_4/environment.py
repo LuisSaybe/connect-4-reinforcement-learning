@@ -53,9 +53,6 @@ class Environment:
             return Environment.AGENT
         return Environment.ADVERSARY
 
-    def reverseState(state):
-        return list(map(Environment.reversePoint, state))
-
     def connects(self, x, y, player):
         magnitude_list = list(range(Environment.CONNNECTION_MAGNITUDE))
         verticals = [
