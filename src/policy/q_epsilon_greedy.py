@@ -1,6 +1,5 @@
 import tensorflow as tf
 import random
-import numpy
 
 class QEpsilonGreedyPolicy:
     def __init__(self, model, greedy_probability):
@@ -8,7 +7,7 @@ class QEpsilonGreedyPolicy:
         self.greedy_probability = greedy_probability
 
     def getAction(self, state, available_actions):
-        random_action = numpy.random.choice([True, False], p=[self.greedy_probability, 1 - self.greedy_probability])
+        random_action = random.choices([True, False], [self.greedy_probability, 1 - self.greedy_probability])[0]
 
         if random_action:
             return random.choice(available_actions)

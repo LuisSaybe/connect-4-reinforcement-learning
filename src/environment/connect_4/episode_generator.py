@@ -1,3 +1,5 @@
+import random
+
 from environment.connect_4.environment import Environment
 
 class EpisodeGenerator:
@@ -6,7 +8,7 @@ class EpisodeGenerator:
         self.adversary_policy = adversary_policy
 
     def getMany(self, n):
-        return [ self.get(i % 2 == 0) for i in range(n) ]
+        return [ self.get(random.choice([True, False])) for _ in range(n) ]
 
     def get(self, agent_first):
         environment = Environment()

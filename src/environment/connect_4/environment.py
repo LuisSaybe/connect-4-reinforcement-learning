@@ -23,7 +23,7 @@ class Environment:
         return result
 
     def inBounds(self, x, y):
-        return x > 0 and y > 0 and x < len(self.board) and y < len(self.board[x])
+        return x >= 0 and y >= 0 and x < len(self.board) and y < len(self.board[x])
 
     def areInBounds(self, points):
         for (x, y) in points:
@@ -46,15 +46,9 @@ class Environment:
             result.extend(row)
         return result
 
-    def reversePoint(point):
-        if point == Environment.EMPTY:
-            return Environment.EMPTY
-        elif point == Environment.ADVERSARY:
-            return Environment.AGENT
-        return Environment.ADVERSARY
-
     def connects(self, x, y, player):
         magnitude_list = list(range(Environment.CONNNECTION_MAGNITUDE))
+
         verticals = [
             self.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
@@ -76,8 +70,8 @@ class Environment:
         diagnol_top_left_to_bottom_right = [
             self.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
-                x - Environment.CONNNECTION_MAGNITUDE,
-                y + Environment.CONNNECTION_MAGNITUDE,
+                x - i,
+                y + i,
                 1,
                 -1
             ) for i in magnitude_list
@@ -85,8 +79,8 @@ class Environment:
         diagnol_bottom_left_to_top_right = [
             self.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
-                x - Environment.CONNNECTION_MAGNITUDE,
-                y - Environment.CONNNECTION_MAGNITUDE,
+                x - i,
+                y - i,
                 1,
                 1
             ) for i in magnitude_list
@@ -112,6 +106,7 @@ class Environment:
                 return (row, column)
 
         return None
+
     def __str__(self):
      rows = map(lambda row: str(row), reversed(self.board))
      return '\n'.join(rows)

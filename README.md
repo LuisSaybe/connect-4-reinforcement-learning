@@ -1,15 +1,23 @@
 ## connect 4 with tensorflow 2
 
+Reinforcement Learning, Sutton, Barto
+Chapter 9: On-policy Prediction with Approximation
+
 #### build
 
-build
+start training
 
 ```sh
-docker build --rm -t tf-connect4 .
+docker-compose up
 ```
 
-#### restart training
+play a game
 
 ```sh
-docker-compose down && docker-compose rm && docker-compose up
+docker run \
+  -it \
+  --name connect-4-play \
+  --rm \
+  -v $(pwd):/tmp/project \
+  connect-4-reinforcement-learning_trainer python3 /tmp/project/src/play.py
 ```

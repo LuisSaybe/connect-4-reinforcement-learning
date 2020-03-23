@@ -1,17 +1,21 @@
 version: '3.7'
 
 services:
-  server:
-    image: luissaybe/tf-connect4
-    ports:
-      - "8000:8000"
-    volumes:
-       - ./model:/tmp/model
   trainer:
-    image: luissaybe/tf-connect4
-    command: python3 src/train.py 5000000000 30
+    build:
+      context: .
+    command: python3 src/train.py 1000000
+    container_name: connnect-4-trainer
+    working_dir: /tmp/project
     volumes:
-       - ./model:/tmp/model
-
-volumes:
-  model:
+       - .:/tmp/project
+  tensorboard:
+    build:
+      context: .
+    command: tensorboard --bind_all --logdir /tmp/project/logs
+    container_name: connnect-4-tensorboard
+    ports:
+      - "8888:8888"
+      - "6006:6006"
+    volumes:
+       - .:/tmp/project

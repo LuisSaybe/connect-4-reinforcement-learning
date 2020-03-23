@@ -1,18 +1,14 @@
-import itertools
-import os
 import sys
+import os
+import datetime
 import time
-import multiprocessing
-
 import tensorflow as tf
 
 from environment.connect_4.environment import Environment
 from environment.connect_4.episode_generator import EpisodeGenerator
-from resource.prediction import PredictionResource
 from policy.q_epsilon_greedy import QEpsilonGreedyPolicy
-from resource.cors import CORS
 
-MODEL_PATH = '/tmp/model/model.h5'
+iterations = int(sys.argv[1])
 
 model = tf.keras.Sequential([
   tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
@@ -49,26 +45,31 @@ def collect(episode_count):
 
     return x, y
 
-iterations = int(sys.argv[1])
-epsides_count = int(sys.argv[2])
+episode_summary_writer = tf.summary.create_file_writer(
+    'logs/' + datetime.datetime.now().strftime("summary-%Y%m%d-%H%M%S")
+)
 
-for i in range(iterations):
-    print('iteration', i + 1, 'of', iterations)
+for step in range(iterations):
+    print(step, '/', iterations)
+    x, y = collect(1)
 
-    start = time.time()
+    callbacks = []
 
-    print('collecting', epsides_count, 'episodes')
+    if step % 10 == 0:
+        def on_epoch_end(_, logs):
+            with episode_summary_writer.as_default():
+                tf.summary.scalar('loss', logs.get('loss'), step=step + 1)
+                tf.summary.scalar('accuracy', logs.get('accuracy'), step=step + 1)
 
-    x, y = collect(epsides_count)
-
-    print('fitting', len(x), 'points')
+        callbacks=[
+          tf.keras.callbacks.LambdaCallback(on_epoch_end=on_epoch_end)
+        ]
 
     model.fit(
-      tf.one_hot(x, dtype='float32', depth=3),
-      tf.constant(y, shape=(len(y), Environment.COLUMNS))
+      x=tf.one_hot(x, dtype='float32', depth=3),
+      y=tf.constant(y, shape=(len(y), Environment.COLUMNS)),
+      callbacks=callbacks
     )
 
-    model.save(MODEL_PATH)
-
-    end = time.time()
-    print('duration:', end - start)
+MODEL_PATH = '/tmp/project/logs/model.h5'
+model.save(MODEL_PATH)
