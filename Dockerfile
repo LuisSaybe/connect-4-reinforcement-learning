@@ -14,3 +14,6 @@ RUN yum -y groupinstall -y "Development Tools" && \
     make install && \
     pip3 install --upgrade pip && \
     pip3 install tensorflow==2.1.0 tensorflow_probability==0.8.0 numpy
+
+COPY . $SOURCE_DIRECTORY
+WORKDIR $SOURCE_DIRECTORY
