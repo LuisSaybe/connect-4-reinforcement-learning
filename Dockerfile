@@ -11,9 +11,10 @@ RUN yum -y groupinstall -y "Development Tools" && \
     cd Python-$PYTHON_VERSION && \
     ./configure --enable-loadable-sqlite-extensions && \
     make && \
-    make install && \
-    pip3 install --upgrade pip && \
-    pip3 install tensorflow==2.1.0 tensorflow_probability==0.8.0 numpy
+    make install
+
+RUN pip3 install --upgrade pip setuptools && \
+    pip3 install tensorflow==2.1.0
 
 COPY . $SOURCE_DIRECTORY
 WORKDIR $SOURCE_DIRECTORY
