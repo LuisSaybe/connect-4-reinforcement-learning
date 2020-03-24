@@ -9,6 +9,7 @@ from environment.connect_4.episode_generator import EpisodeGenerator
 from policy.q_epsilon_greedy import QEpsilonGreedyPolicy
 
 iterations = int(sys.argv[1])
+log_every = int(sys.argv[2])
 
 model = tf.keras.Sequential([
   tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
@@ -55,7 +56,7 @@ for step in range(iterations):
 
     callbacks = []
 
-    if step % 10 == 0:
+    if step % log_every == 0:
         def on_epoch_end(_, logs):
             with episode_summary_writer.as_default():
                 tf.summary.scalar('loss', logs.get('loss'), step=step + 1)
@@ -65,11 +66,11 @@ for step in range(iterations):
           tf.keras.callbacks.LambdaCallback(on_epoch_end=on_epoch_end)
         ]
 
+        MODEL_PATH = '/tmp/project/logs/model.h5'
+        model.save(MODEL_PATH)
+
     model.fit(
       x=tf.one_hot(x, dtype='float32', depth=3),
       y=tf.constant(y, shape=(len(y), Environment.COLUMNS)),
       callbacks=callbacks
     )
-
-MODEL_PATH = '/tmp/project/logs/model.h5'
-model.save(MODEL_PATH)
