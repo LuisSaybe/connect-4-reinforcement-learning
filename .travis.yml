@@ -2,10 +2,13 @@ language: python
 services:
   - docker
 install:
-  - echo 'hello'
+  - docker build -t luissaybe/connect-4-reinforcement-learning .
 script:
   - echo 'hello'
 deploy:
   provider: script
-  script: bash docker/push.bash
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker push luissaybe/connect-4-reinforcement-learning:latest
+    - docker logout
   on:

@@ -3,16 +3,14 @@ version: '3.7'
 services:
   trainer:
     image: luissaybe/connect-4-reinforcement-learning
-    command: python3 src/train.py 1000000 10000
-    container_name: connnect-4-trainer
+    command: python3 src/train.py 1000000 10
     working_dir: /tmp/project
     volumes:
-       - .:/tmp/project
+       - ./logs:/tmp/project/logs
   tensorboard:
     image: luissaybe/connect-4-reinforcement-learning
     command: tensorboard --bind_all --logdir /tmp/project/logs
-    container_name: connnect-4-tensorboard
     ports:
       - "6006:6006"
     volumes:
-       - .:/tmp/project
+       - ./logs:/tmp/project/logs
