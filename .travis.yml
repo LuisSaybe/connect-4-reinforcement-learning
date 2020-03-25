@@ -8,7 +8,5 @@ script:
 deploy:
   provider: script
   script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker push luissaybe/connect-4-reinforcement-learning:latest
-    - docker logout
+    - bash push.bash
   on:

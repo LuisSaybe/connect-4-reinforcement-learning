@@ -28,6 +28,8 @@ else:
       metrics=['accuracy']
     )
 
+    print(MODEL_PATH, 'is not a file, creating new model')
+
 def collect(episode_count):
     agent_policy = QEpsilonGreedyPolicy(model, 0.1)
     generator = EpisodeGenerator(agent_policy, agent_policy)
