@@ -14,7 +14,7 @@ RUN yum -y groupinstall -y "Development Tools" && \
     make install
 
 RUN pip3 install --upgrade pip setuptools && \
-    pip3 install tensorflow==2.1.0
+    pip3 install tensorflow==2.1.0 tensorflowjs
 
 COPY . $SOURCE_DIRECTORY
 WORKDIR $SOURCE_DIRECTORY

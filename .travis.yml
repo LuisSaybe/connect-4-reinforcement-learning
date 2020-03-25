@@ -10,3 +10,4 @@ deploy:
   script:
     - bash push.bash
   on:
+    branch: master
