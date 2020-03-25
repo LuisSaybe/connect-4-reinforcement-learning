@@ -16,8 +16,7 @@ play a game
 ```sh
 docker run \
   -it \
-  --name connect-4-play \
   --rm \
-  -v $(pwd):/tmp/project \
-  connect-4-reinforcement-learning_trainer python3 /tmp/project/src/play.py
+  -v $(pwd)/logs:/tmp/project/logs \
+  luissaybe/connect-4-reinforcement-learning python3 /tmp/project/src/play.py
 ```

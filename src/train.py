@@ -11,16 +11,22 @@ from policy.q_epsilon_greedy import QEpsilonGreedyPolicy
 iterations = int(sys.argv[1])
 log_every = int(sys.argv[2])
 
-model = tf.keras.Sequential([
-  tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
-  tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3]),
-])
+MODEL_PATH = '/tmp/project/logs/model.h5'
 
-model.compile(
-  optimizer=tf.keras.optimizers.SGD(lr=0.01),
-  loss='mean_squared_error',
-  metrics=['accuracy']
-)
+if os.path.isfile(MODEL_PATH):
+    model = tf.keras.models.load_model(MODEL_PATH)
+    print('Loaded model from ', MODEL_PATH)
+else:
+    model = tf.keras.Sequential([
+      tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
+      tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3]),
+    ])
+
+    model.compile(
+      optimizer=tf.keras.optimizers.SGD(lr=0.01),
+      loss='mean_squared_error',
+      metrics=['accuracy']
+    )
 
 def collect(episode_count):
     agent_policy = QEpsilonGreedyPolicy(model, 0.1)
@@ -66,7 +72,6 @@ for step in range(iterations):
           tf.keras.callbacks.LambdaCallback(on_epoch_end=on_epoch_end)
         ]
 
-        MODEL_PATH = '/tmp/project/logs/model.h5'
         model.save(MODEL_PATH)
 
     model.fit(
