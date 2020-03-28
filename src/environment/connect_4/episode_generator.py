@@ -3,56 +3,51 @@ import random
 from environment.connect_4.environment import Environment
 
 class EpisodeGenerator:
-    def __init__(self, agent_policy, adversary_policy):
-        self.agent_policy = agent_policy
-        self.adversary_policy = adversary_policy
+    def __init__(self, policy_a, policy_b):
+        self.policy_a = policy_a
+        self.policy_b = policy_b
 
-    def getMany(self, n):
-        return [ self.get(random.choice([True, False])) for _ in range(n) ]
-
-    def get(self, agent_first):
-        environment = Environment()
-
-        is_agents_turn = agent_first
-        policy_index = 0
-        episode = []
+    def get(self, current_agent_is_a = random.choice([True, False])):
+        environment_a = Environment()
+        environment_b = Environment()
+        a_sars = [(None, None, None)]
+        b_sars = [(None, None, None)]
 
         while True:
-            policy = self.agent_policy if is_agents_turn else self.adversary_policy
-            player = Environment.AGENT if is_agents_turn else Environment.ADVERSARY
+            if current_agent_is_a:
+                agent = self.policy_a
+                agent_environment = environment_a
+                adversary_environment = environment_b
+                agent_sars = a_sars
+                adversary_sars = b_sars
+            else:
+                agent = self.policy_b
+                agent_environment = environment_b
+                adversary_environment = environment_a
+                agent_sars = b_sars
+                adversary_sars = a_sars
 
-            available_actions = environment.getAvailableActions()
-            state = environment.getState()
+            available_actions = agent_environment.getAvailableActions()
+            state = agent_environment.getState()
 
             if len(available_actions) == 0:
-                if not is_agents_turn:
-                    episode.append((state, None, 0))
+                agent_sars[-1] = (state, 0, Environment.DEFAULT_REWARD)
+                adversary_sars[-1] = (adversary_environment.getState(), None, Environment.DEFAULT_REWARD)
                 break
 
-            action = policy.getAction(state, available_actions)
+            action = agent.getAction(state, available_actions)
 
-            (x, y) = environment.drop(action, player)
+            agent_sars[-1] = (state, action, agent_sars[-1][2])
 
-            if environment.connects(x, y, player):
-                if is_agents_turn:
-                    previous_state = episode[-1][0]
-                    episode[-1] = (previous_state, action, 0)
-                    episode.append((state, None, 1))
-                else:
-                    episode.append((state, None, -1))
+            (x, y) = agent_environment.drop(action, Environment.AGENT)
+            adversary_environment.drop(action, Environment.ADVERSARY)
+
+            if agent_environment.connects(x, y, Environment.AGENT):
+                agent_sars.append((agent_environment.getState(), None, Environment.WIN_REWARD))
+                adversary_sars[-1] = (adversary_environment.getState(), None, Environment.LOSE_REWARD)
                 break
-            elif is_agents_turn:
-                if len(episode) == 0:
-                    episode.append((state, action, None))
-                else:
-                    previous_state = episode[-1][0]
-                    episode[-1] = (previous_state, action, 0)
-            else:
-                if len(episode) == 0:
-                    episode.append((state, None, None))
-                else:
-                    episode.append((state, None, 0))
 
-            is_agents_turn = not is_agents_turn
+            agent_sars.append((None, None, Environment.DEFAULT_REWARD))
+            current_agent_is_a = not current_agent_is_a
 
-        return episode
+        return (a_sars, b_sars)

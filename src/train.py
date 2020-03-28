@@ -30,27 +30,27 @@ else:
 
     print(MODEL_PATH, 'is not a file, creating new model')
 
-def collect(episode_count):
+def collect():
     agent_policy = QEpsilonGreedyPolicy(model, 0.1)
     generator = EpisodeGenerator(agent_policy, agent_policy)
-    episodes = generator.getMany(episode_count)
+    (agent_episode, adversary_episode) = generator.get()
 
     x = []
     y = []
 
-    for episode in episodes:
+    for episode in [agent_episode, adversary_episode]:
         final_reward = episode[-1][2]
         states = list(map(lambda sar : sar[0], episode))
         predictions = model.predict(tf.one_hot(states, dtype='float32', depth=3)).tolist()
 
         for index in range(len(episode) - 1):
-          state = episode[index][0]
-          action = episode[index][1]
-          values = predictions[index]
-          values[action] = final_reward
+            state = episode[index][0]
+            action = episode[index][1]
+            values = predictions[index]
+            values[action] = final_reward
 
-          x.append(state)
-          y.append(values)
+            x.append(state)
+            y.append(values)
 
     return x, y
 
@@ -60,7 +60,7 @@ episode_summary_writer = tf.summary.create_file_writer(
 
 for step in range(iterations):
     print(step, '/', iterations)
-    x, y = collect(1)
+    x, y = collect()
 
     callbacks = []
 

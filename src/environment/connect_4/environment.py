@@ -7,9 +7,17 @@ class Environment:
     CONNNECTION_MAGNITUDE = 4
     COLUMNS = 7
     ROWS = 6
+    WIN_REWARD = 1
+    LOSE_REWARD = -1
+    DEFAULT_REWARD = 0
 
     def __init__(self):
-        self.board = [ [ Environment.EMPTY ] * Environment.COLUMNS for row in range(6)]
+        self.board = [ [ Environment.EMPTY ] * Environment.COLUMNS for row in range(Environment.ROWS)]
+        self.inBoundsVectors = [ [ None ] * Environment.COLUMNS for row in range(Environment.ROWS)]
+
+        for row in range(len(self.board)):
+            for column in range(len(self.board[row])):
+                self.inBoundsVectors[row][column] = self.getInBoundVectors(row, column)
 
     def getAvailableActions(self):
         result = []
@@ -46,7 +54,7 @@ class Environment:
             result.extend(row)
         return result
 
-    def connects(self, x, y, player):
+    def getInBoundVectors(self, x, y):
         magnitude_list = list(range(Environment.CONNNECTION_MAGNITUDE))
 
         verticals = [
@@ -92,7 +100,10 @@ class Environment:
             diagnol_top_left_to_bottom_right,
             diagnol_bottom_left_to_top_right
         )
-        all_in_bound_vectors = filter(lambda vector: self.areInBounds(vector), all_vectors)
+        return list(filter(lambda vector: self.areInBounds(vector), all_vectors))
+
+    def connects(self, x, y, player):
+        all_in_bound_vectors = self.inBoundsVectors[x][y]
 
         for vector in all_in_bound_vectors:
             if self.areAllEqual(vector, player):
