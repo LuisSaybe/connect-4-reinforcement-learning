@@ -98,7 +98,7 @@ class Environment:
         return list(filter(lambda vector: Environment.areInBounds(vector), all_vectors))
 
     def connects(self, x, y, player):
-        for vector in self.IN_BOUNDS_VECTORS[x][y]:
+        for vector in Environment.IN_BOUNDS_VECTORS[x][y]:
             if self.areAllEqual(vector, player):
                 return True
         return False
@@ -111,12 +111,15 @@ class Environment:
 
         return None
 
+    def getInBoundsVector():
+        result = [ [ None ] * Environment.COLUMNS for row in range(Environment.ROWS)]
+        for row in range(Environment.ROWS):
+            for column in range(Environment.COLUMNS):
+                result[row][column] = Environment.getInBoundVectors(row, column)
+        return result
+
     def __str__(self):
      rows = map(lambda row: str(row), reversed(self.board))
      return '\n'.join(rows)
 
-Environment.IN_BOUNDS_VECTORS = [ [ None ] * Environment.COLUMNS for row in range(Environment.ROWS)]
-
-for row in range(Environment.ROWS):
-    for column in range(Environment.COLUMNS):
-        Environment.IN_BOUNDS_VECTORS[row][column] = Environment.getInBoundVectors(row, column)
+Environment.IN_BOUNDS_VECTORS = Environment.getInBoundsVector()
