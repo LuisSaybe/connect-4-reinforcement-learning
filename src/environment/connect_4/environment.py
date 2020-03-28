@@ -13,11 +13,6 @@ class Environment:
 
     def __init__(self):
         self.board = [ [ Environment.EMPTY ] * Environment.COLUMNS for row in range(Environment.ROWS)]
-        self.inBoundsVectors = [ [ None ] * Environment.COLUMNS for row in range(Environment.ROWS)]
-
-        for row in range(len(self.board)):
-            for column in range(len(self.board[row])):
-                self.inBoundsVectors[row][column] = self.getInBoundVectors(row, column)
 
     def getAvailableActions(self):
         result = []
@@ -30,12 +25,12 @@ class Environment:
 
         return result
 
-    def inBounds(self, x, y):
-        return x >= 0 and y >= 0 and x < len(self.board) and y < len(self.board[x])
+    def inBounds(x, y):
+        return x >= 0 and y >= 0 and x < Environment.ROWS and y < Environment.COLUMNS
 
-    def areInBounds(self, points):
+    def areInBounds(points):
         for (x, y) in points:
-            if not self.inBounds(x, y):
+            if not Environment.inBounds(x, y):
                 return False
 
         return True
@@ -44,7 +39,7 @@ class Environment:
         return len(list(filter(lambda point: self.board[point[0]][point[1]] == target, points))) == len(points)
 
 
-    def collectAlongVector(self, magnitude, x, y, dx, dy):
+    def collectAlongVector(magnitude, x, y, dx, dy):
         return [ (x + dx * index, y + dy * index) for index in range(magnitude) ]
 
     def getState(self):
@@ -54,11 +49,11 @@ class Environment:
             result.extend(row)
         return result
 
-    def getInBoundVectors(self, x, y):
+    def getInBoundVectors(x, y):
         magnitude_list = list(range(Environment.CONNNECTION_MAGNITUDE))
 
         verticals = [
-            self.collectAlongVector(
+            Environment.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
                 x - i,
                 y,
@@ -67,7 +62,7 @@ class Environment:
             ) for i in magnitude_list
         ]
         horizontals = [
-            self.collectAlongVector(
+            Environment.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
                 x,
                 y - i,
@@ -76,7 +71,7 @@ class Environment:
             ) for i in magnitude_list
         ]
         diagnol_top_left_to_bottom_right = [
-            self.collectAlongVector(
+            Environment.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
                 x - i,
                 y + i,
@@ -85,7 +80,7 @@ class Environment:
             ) for i in magnitude_list
         ]
         diagnol_bottom_left_to_top_right = [
-            self.collectAlongVector(
+            Environment.collectAlongVector(
                 Environment.CONNNECTION_MAGNITUDE,
                 x - i,
                 y - i,
@@ -100,12 +95,10 @@ class Environment:
             diagnol_top_left_to_bottom_right,
             diagnol_bottom_left_to_top_right
         )
-        return list(filter(lambda vector: self.areInBounds(vector), all_vectors))
+        return list(filter(lambda vector: Environment.areInBounds(vector), all_vectors))
 
     def connects(self, x, y, player):
-        all_in_bound_vectors = self.inBoundsVectors[x][y]
-
-        for vector in all_in_bound_vectors:
+        for vector in self.IN_BOUNDS_VECTORS[x][y]:
             if self.areAllEqual(vector, player):
                 return True
         return False
@@ -121,3 +114,9 @@ class Environment:
     def __str__(self):
      rows = map(lambda row: str(row), reversed(self.board))
      return '\n'.join(rows)
+
+Environment.IN_BOUNDS_VECTORS = [ [ None ] * Environment.COLUMNS for row in range(Environment.ROWS)]
+
+for row in range(Environment.ROWS):
+    for column in range(Environment.COLUMNS):
+        Environment.IN_BOUNDS_VECTORS[row][column] = Environment.getInBoundVectors(row, column)

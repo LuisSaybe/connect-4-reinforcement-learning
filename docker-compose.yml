@@ -3,9 +3,9 @@ version: '3.7'
 services:
   trainer:
     image: luissaybe/connect-4-reinforcement-learning
-    command: python3 /tmp/project/src/train.py 1000 1000
+    command: python3 /tmp/project/src/train.py 10000000 1000
     volumes:
-       - .:/tmp/project
+       - ./logs:/tmp/project/logs
   tensorboard:
     image: luissaybe/connect-4-reinforcement-learning
     command: tensorboard --bind_all --logdir /tmp/project/logs
