@@ -81,3 +81,6 @@ for step in range(iterations):
       y=tf.constant(y, shape=(len(y), Environment.COLUMNS)),
       callbacks=callbacks
     )
+
+    #tf 2 leaks memory, try to update to 2.2 on release
+    tf.keras.backend.clear_session()
