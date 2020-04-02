@@ -19,11 +19,11 @@ if os.path.isfile(MODEL_PATH):
 else:
     model = tf.keras.Sequential([
       tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
-      tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3]),
+      tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3], activation='tanh'),
     ])
 
     model.compile(
-      optimizer=tf.keras.optimizers.SGD(lr=0.01),
+      optimizer=tf.keras.optimizers.Adam(lr=0.01),
       loss='mean_squared_error',
       metrics=['accuracy']
     )
