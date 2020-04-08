@@ -16,9 +16,15 @@ class QEpsilonGreedyPolicy:
         prediction = self.model.predict(state_tensor)
         values = prediction.tolist()[0]
 
-        indexes = range(len(values))
-        available_indexes = list(filter(lambda i : i in available_actions, indexes))
-        maximum_value = max(map(lambda i : values[i], available_indexes))
-        maximum_indexes = list(filter(lambda i : values[i] == maximum_value, available_indexes))
+        maximum_action_value = max(map(lambda i : values[i], available_actions))
+        maximum_indexes = list(filter(lambda i : values[i] == maximum_action_value, available_actions))
+
+        if len(maximum_indexes) == 0:
+            print('state', state)
+            print('available_actions', available_actions)
+            print('values', values)
+            print('maximum_action_value', maximum_action_value)
+            print('maximum_indexes', maximum_indexes)
+            raise
 
         return random.choice(maximum_indexes)
