@@ -43,11 +43,7 @@ class Environment:
         return [ (x + dx * index, y + dy * index) for index in range(magnitude) ]
 
     def getState(self):
-        result = []
-
-        for row in self.board:
-            result.extend(row)
-        return result
+        return self.board
 
     def getInBoundVectors(x, y):
         magnitude_list = list(range(Environment.CONNNECTION_MAGNITUDE))

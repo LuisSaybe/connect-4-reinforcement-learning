@@ -18,12 +18,18 @@ if os.path.isfile(MODEL_PATH):
     print('Loaded model from ', MODEL_PATH)
 else:
     model = tf.keras.Sequential([
-      tf.keras.layers.Flatten(input_shape=[Environment.ROWS * Environment.COLUMNS, 3]),
-      tf.keras.layers.Dense(7, input_shape=[Environment.ROWS * Environment.COLUMNS * 3], activation='tanh'),
+      tf.keras.layers.Conv2D(
+        filters=1,
+        input_shape=(Environment.ROWS, Environment.COLUMNS, 3),
+        kernel_size=3,
+        padding='same'
+      ),
+      tf.keras.layers.Flatten(),
+      tf.keras.layers.Dense(7),
     ])
 
     model.compile(
-      optimizer=tf.keras.optimizers.Adam(lr=0.01),
+      optimizer=tf.keras.optimizers.SGD(learning_rate=0.01),
       loss='mean_squared_error',
       metrics=['accuracy']
     )
