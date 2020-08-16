@@ -22,10 +22,16 @@ else:
         filters=1,
         input_shape=(Environment.ROWS, Environment.COLUMNS, 3),
         kernel_size=3,
-        padding='same'
+        padding='same',
+        activation='relu'
+      ),
+      tf.keras.layers.MaxPooling2D(
+        pool_size=(2, 2),
+        strides=None,
+        padding="valid"
       ),
       tf.keras.layers.Flatten(),
-      tf.keras.layers.Dense(7),
+      tf.keras.layers.Dense(7, activation='tanh'),
     ])
 
     model.compile(
