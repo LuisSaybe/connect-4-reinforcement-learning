@@ -35,7 +35,7 @@ else:
     ])
 
     model.compile(
-      optimizer=tf.keras.optimizers.SGD(learning_rate=0.01),
+      optimizer=tf.keras.optimizers.Adam(learning_rate=0.03),
       loss='mean_squared_error',
       metrics=['accuracy']
     )
