@@ -19,12 +19,23 @@ if os.path.isfile(MODEL_PATH):
 else:
     model = tf.keras.Sequential([
       tf.keras.layers.Conv2D(
-        filters=1,
+        filters=4,
         input_shape=(Environment.ROWS, Environment.COLUMNS, 3),
         kernel_size=3,
         padding='same',
-        activation='relu'
       ),
+      tf.keras.layers.LeakyReLU(),
+      tf.keras.layers.MaxPooling2D(
+        pool_size=(2, 2),
+        strides=None,
+        padding="valid"
+      ),
+      tf.keras.layers.Conv2D(
+        filters=2,
+        kernel_size=1,
+        padding='same',
+      ),
+      tf.keras.layers.LeakyReLU(),
       tf.keras.layers.MaxPooling2D(
         pool_size=(2, 2),
         strides=None,
@@ -35,34 +46,36 @@ else:
     ])
 
     model.compile(
-      optimizer=tf.keras.optimizers.Adam(learning_rate=0.03),
+      optimizer=tf.keras.optimizers.Adam(learning_rate=0.02),
       loss='mean_squared_error',
       metrics=['accuracy']
     )
 
     print(MODEL_PATH, 'is not a file, creating new model')
 
-def collect():
+def collect(count):
     agent_policy = QEpsilonGreedyPolicy(model, 0.1)
     generator = EpisodeGenerator(agent_policy, agent_policy)
-    (agent_episode, adversary_episode) = generator.get()
 
     x = []
     y = []
 
-    for episode in [agent_episode, adversary_episode]:
-        final_reward = episode[-1][2]
-        states = list(map(lambda sar : sar[0], episode))
-        predictions = model.predict(tf.one_hot(states, dtype='float32', depth=3)).tolist()
+    for i in range(count):
+        (agent_episode, adversary_episode) = generator.get()
 
-        for index in range(len(episode) - 1):
-            state = episode[index][0]
-            action = episode[index][1]
-            values = predictions[index]
-            values[action] = final_reward
+        for episode in [agent_episode, adversary_episode]:
+            final_reward = episode[-1][2]
+            states = list(map(lambda sar : sar[0], episode))
+            predictions = model.predict(tf.one_hot(states, dtype='float32', depth=3)).tolist()
 
-            x.append(state)
-            y.append(values)
+            for index in range(len(episode) - 1):
+                state = episode[index][0]
+                action = episode[index][1]
+                values = predictions[index]
+                values[action] = final_reward
+
+                x.append(state)
+                y.append(values)
 
     return x, y
 
@@ -72,7 +85,7 @@ episode_summary_writer = tf.summary.create_file_writer(
 
 for step in range(iterations):
     print(step, '/', iterations)
-    x, y = collect()
+    x, y = collect(50)
 
     callbacks = []
 
@@ -93,6 +106,3 @@ for step in range(iterations):
       y=tf.constant(y, shape=(len(y), Environment.COLUMNS)),
       callbacks=callbacks
     )
-
-    #tf 2 leaks memory, try to update to 2.2 on release
-    tf.keras.backend.clear_session()
